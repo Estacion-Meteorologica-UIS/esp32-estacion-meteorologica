@@ -1,0 +1,2 @@
+void setupUV();
+float LeerSensorUV();
