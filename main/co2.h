@@ -1,2 +1,2 @@
-void setup_co2();
-float leerco2();
+//void setup_co2();
+//float leerco2();
