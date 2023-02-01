@@ -18,15 +18,14 @@
 #include <DHT_U.h>
 //#include <dummy.h>
 
-#define DHTPIN 4
+#define DHTPIN 25
 #define DHTTYPE DHT11
 
 DHT dht(DHTPIN, DHTTYPE);
 
 void setup_sensorhum() {
-Serial.println(F("Sensor de humo entro a configuracion"));
-
 dht.begin();
+Serial.println(F("Sensor de humo entro configuracion"));
 }
 
 void imprimirTyH(float t, float h) {	

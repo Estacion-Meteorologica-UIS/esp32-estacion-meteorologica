@@ -16,7 +16,7 @@
 #include <Arduino.h>
 #include <Wire.h>  
 int UVOUT = 15;  // Se conecta eñ D15 a la salida del sensor 
-int REF_3V3 = 4; //D4 se conecta con los 3.3V 
+int REF_3V3 = 2; //D4 se conecta con los 3.3V 
  
  int averageAnalogRead(int pinToRead)
 { byte numberOfReadings = 8;
@@ -33,9 +33,10 @@ float mapfloat(float x, float in_min, float in_max, float out_min, float out_max
 //--------------------------------------------------------------------------------
 void setupUV()
 { 
-  Serial.println(F("Sensor de UV entro a configuracion"));
+  
   pinMode(UVOUT, INPUT);
   pinMode(REF_3V3, INPUT); 
+  Serial.println(F("Sensor de UV entro configuro"));
 }
 
 float LeerSensorUV() 

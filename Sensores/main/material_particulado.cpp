@@ -21,8 +21,8 @@
 /////////////////////////////////////////////////////////////////////////////
 // Definición de pines.
 #include <Arduino.h>
-const int sharpLEDPin = 18;   // Arduino digital pin 18 connectado al LED del sensor.
-const int sharpVoPin = 15;   // Arduino analog pin 15 connectado al Vo del sensor.
+const int sharpLEDPin = 5;   // Arduino digital pin 18 connectado al LED del sensor.
+const int sharpVoPin = 4;   // Arduino analog pin 15 connectado al Vo del sensor.
 
 // Para promediar las últimas N lecturas de voltaje bruto.
 #define N 100
@@ -122,9 +122,9 @@ void setup_material_particulado() {
   // Espere dos segundos para el inicio.
   delay(2000);
   Serial.println("");
-  Serial.println(F("Sensor de material particulado entro a configuracion"));
   //Serial.println("GP2Y1014AU0F programa");
   Serial.println("=================");
+  Serial.println(F("Sensor de material particulado se configuro"));
 }
 
 // Función loop
