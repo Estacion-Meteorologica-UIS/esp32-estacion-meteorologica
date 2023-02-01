@@ -13,21 +13,19 @@
 // Codigo dado por: Daniel Cerro
 // Codigo modificado por: Juan Sebastian Guerrero
 /////////////////////////////////////////////////////////////////////////////
-
+#include <Arduino.h>
 #include <DHT.h>
 #include <DHT_U.h>
 //#include <dummy.h>
 
-#define DHTPIN 34
+#define DHTPIN 14
 #define DHTTYPE DHT11
 
 DHT dht(DHTPIN, DHTTYPE);
 
-void setup() {
-Serial.begin(115200);
-Serial.println(F("DHTxx test!"));
-
+void setup_sensorhum() {
 dht.begin();
+Serial.println(F("Sensor de humo entro configuracion"));
 }
 
 void imprimirTyH(float t, float h) {	
@@ -43,7 +41,15 @@ void imprimirTyH(float t, float h) {
 	Serial.print(t);
 	Serial.println(F("°C "));	
 }
+float leerhumedad(){
+  return dht.readHumidity();	
+}
+float leertemperatura(){
+  return dht.readTemperature();
 
+}
+
+/*
 void loop() {
 
   
@@ -57,3 +63,4 @@ void loop() {
 	}		
 	
 }
+*/
