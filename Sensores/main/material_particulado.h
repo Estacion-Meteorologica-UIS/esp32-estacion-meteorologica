@@ -1,2 +1,2 @@
-void setup_material_particulado();
-float LeerSensorMaterialParticulado();
+void setupSensorMaterialParticulado();
+float leerSensorMaterialParticulado();

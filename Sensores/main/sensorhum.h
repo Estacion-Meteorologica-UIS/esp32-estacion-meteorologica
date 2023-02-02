@@ -1,3 +1,3 @@
-void setup_sensorhum();
-float leerhumedad();
-float leertemperatura();
+void setupSensorTempHum();
+float leerSensorHumedad();
+float leerSensorTemperatura();
