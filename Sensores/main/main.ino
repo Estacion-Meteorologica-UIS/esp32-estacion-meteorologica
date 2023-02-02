@@ -10,7 +10,7 @@ Adafruit_SGP30 sgp;
 
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(9600);
   setup_material_particulado();
   setup_sensorhum();
   setupUV();
@@ -18,7 +18,7 @@ void setup() {
   //////////////////CO2
   if(! sgp.begin()){ //Alerta por si la ESP no detecta el sensor
     Serial.println("Sensor no encontrado.");    
-    while(1);
+    
   }
   // put your setup code here, to run once:
 
@@ -36,7 +36,7 @@ void loop() {
 
   Serial.println("-------------------RESUMEN-------------------");
   Serial.println("Material Particulado: "+String(MaterialParticulado)+" Ultra Violeta: "+String(Ultra_Violeta)+" Humedad: "+String(Humedad)+" Temperatura: "+String(Temperatura)+" C02: "+String(co2));
-  //Serial.println(" C02: "+String(co2));
+  Serial.println(" Material: "+String(MaterialParticulado));
 
 }
 

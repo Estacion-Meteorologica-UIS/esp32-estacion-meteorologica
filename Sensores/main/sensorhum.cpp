@@ -18,7 +18,7 @@
 #include <DHT_U.h>
 //#include <dummy.h>
 
-#define DHTPIN 25
+#define DHTPIN 14
 #define DHTTYPE DHT11
 
 DHT dht(DHTPIN, DHTTYPE);
