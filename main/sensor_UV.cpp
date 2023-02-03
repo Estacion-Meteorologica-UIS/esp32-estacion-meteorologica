@@ -12,6 +12,7 @@
 
 #include <Arduino.h>
 #include <Wire.h>
+
 // Definición de Pines
 int UVOUT = 15;  // Se conecta el D15 a la salida del sensor 
 int REF_3V3 = 2; // D4 se conecta con los 3.3V 
@@ -52,7 +53,5 @@ float leerSensorUV(){
 
   //También se imprime el voltaje de salida del sensor
   //pero es poder verlo y tenerlo de referencia en la conversión en mapfloat():
-  Serial.println("Lectura: ML8511 voltage: " + String(outputVoltage) +
-                 " ----- UV Intensity (mW/cm^2): " + String(uvIntensity));
   return uvIntensity;
 }

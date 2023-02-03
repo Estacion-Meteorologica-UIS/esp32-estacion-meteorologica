@@ -28,15 +28,6 @@ void setupSensorTempHum(){
   Serial.println("Sensor de Temperatura y Humedad Configurado");
 }
 
-void imprimirTyH(float t, float h){	
-	if(isnan(h) || isnan(t)){  // Alerta en caso de error
-		Serial.println("Failed to read from DHT sensor!");
-		return;
-	}
-	Serial.print("Temperatura: " + String(t) + "ºC" +
-	             " & Humedad: " + String(h) + "%");
-}
-
 float leerSensorHumedad(){
   return dht.readHumidity();	
 }

@@ -71,6 +71,15 @@ float material_particulado, ultra_violeta, humedad, temperatura, co2;
 float total_MP, total_UV, total_H, total_T, total_CO2;
 int nMuestras = 3;
 
+void medir(){
+  material_particulado = leerSensorMaterialParticulado(); // tiempo de ejecucion de 1 seg (N*10 ms)
+  ultra_violeta = leerSensorUV();
+  humedad = leerSensorHumedad();
+  temperatura = leerSensorTemperatura();
+  co2 = leerCO2();
+  delay(2000);
+}
+
 void loop(){
   total_MP = 0; total_UV = 0; total_H = 0; total_T = 0; total_CO2 = 0; // reset counters
   
@@ -97,7 +106,7 @@ void loop(){
   Serial.println("");
   Serial.println("-----------------------------------------------");
   Serial.println("------------------- RESUMEN -------------------");
-  Serial.println("Material Particulado: " + String(material_particulado) +
+  Serial.println("Material Particulado: " + String(material_particulado) + " ug/m3" +
                  " Ultra Violeta: " + String(ultra_violeta) + " mW/m2" +
                  " Humedad: " + String(humedad) + " %" +
                  " Temperatura: " + String(temperatura) + " ºC" +
@@ -109,7 +118,7 @@ void loop(){
     WiFiClient client;
     HTTPClient http;
     //Linea de envio de datos
-    String data = "&field1=" + String(MaterialParticulado)+ "&field2="+String(co2)+ "&field3="+String(Temperatura)+ "&field4="+String(Humedad)+ "&field5="+String(Ultra_Violeta);
+    String data = "&field1=" + String(material_particulado)+ "&field2="+String(co2)+ "&field3="+String(temperatura)+ "&field4="+String(humedad)+ "&field5="+String(ultra_violeta);
     String query = apiUrl + data;
     http.begin(query.c_str());
     int httpResponseCode = http.GET();
@@ -125,19 +134,7 @@ void loop(){
   esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);  // Inicia conteo para despertar
   esp_deep_sleep_start();  
 
-
-  void medir(){
-    Serial.println("MEDICIÓN MATERIAL PARTICULADO");
-    material_particulado = leerSensorMaterialParticulado(); // tiempo de ejecucion de 1 seg (N*10 ms)
-    Serial.println("MEDICIÓN UV");
-    ultra_violeta = leerSensorUV();
-    humedad = leerSensorHumedad();
-    temperatura = leerSensorTemperatura();
-    co2 = leerCO2();
-    delay(2000);
-  }
 }
-
 
 float leerCO2(){
   if (!sgp.IAQmeasure()){  // Alerta en caso de error
