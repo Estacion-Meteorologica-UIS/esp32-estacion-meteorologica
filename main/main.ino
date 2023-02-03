@@ -118,7 +118,11 @@ void loop(){
     WiFiClient client;
     HTTPClient http;
     //Linea de envio de datos
-    String data = "&field1=" + String(material_particulado)+ "&field2="+String(co2)+ "&field3="+String(temperatura)+ "&field4="+String(humedad)+ "&field5="+String(ultra_violeta);
+    String data = "&field1=" + String(temperatura) +
+                  "&field2=" + String(humedad) +
+                  "&field3=" + String(material_particulado) +
+                  "&field4=" + String(ultra_violeta) +
+                  "&field5=" + String(co2);
     String query = apiUrl + data;
     http.begin(query.c_str());
     int httpResponseCode = http.GET();
@@ -141,7 +145,6 @@ float leerCO2(){
     Serial.println("Medición CO2 fallida.");
     return -1;
   }
-  
   if (!sgp.IAQmeasureRaw()){ // Alerta en caso de error
     Serial.println("Medición CO2 sin procesar fallida.");
     return -1;
