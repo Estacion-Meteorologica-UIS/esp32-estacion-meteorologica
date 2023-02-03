@@ -60,14 +60,13 @@ void setupSensorMaterialParticulado(){
   pinMode(sharpLEDPin, OUTPUT);
   
   delay(2000);  // Espere dos segundos para el inicio.
-  Serial.println("");
-  Serial.println(F("Sensor de Material Particulado Configuardo"));
+  Serial.println("Sensor de Material Particulado Configuardo");
 }
 
 float leerSensorMaterialParticulado(){
   VoRawCount = 0;
   VoRawTotal = 0;
-  while (VoRawCount < N){ // mientras que no complete las muestras
+  while (VoRawCount < N){ // Tomar N cantidad de muestras
     // Encienda el LED del sensor de polvo configurando el pin digital como LOW.
     digitalWrite(sharpLEDPin, LOW);
     
@@ -83,7 +82,7 @@ float leerSensorMaterialParticulado(){
     // Espere el resto del ciclo de 10 ms => 10000 - 280 - 100 = 9620 microsegundos.
     delayMicroseconds(9620);
     
-    // Imprime el valor de voltaje sin procesar (número de 0 a 1023), mediante la función Print Value
+    // Imprime el valor de voltaje sin procesar (número de 0 a 1023), mediante la función printValue()
     // printValue("VoRaw", VoRaw, true);
     // Serial.println("");
     

@@ -15,7 +15,6 @@
 #include <Arduino.h>
 #include <DHT.h>
 #include <DHT_U.h>
-// #include <dummy.h>
 
 // Definición de Pines
 #define DHTPIN 14
@@ -26,12 +25,12 @@ DHT dht(DHTPIN, DHTTYPE);
 /*******************************************************************************/
 void setupSensorTempHum(){
   dht.begin();
-  Serial.println(F("Sensor de Temperatura y Humedad Configurado"));
+  Serial.println("Sensor de Temperatura y Humedad Configurado");
 }
 
 void imprimirTyH(float t, float h){	
 	if(isnan(h) || isnan(t)){  // Alerta en caso de error
-		Serial.println(F("Failed to read from DHT sensor!"));
+		Serial.println("Failed to read from DHT sensor!");
 		return;
 	}
 	Serial.print("Temperatura: " + String(t) + "ºC" +
