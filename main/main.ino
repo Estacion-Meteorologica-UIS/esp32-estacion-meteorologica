@@ -1,16 +1,41 @@
 /* Codigo para ESP32 para hacer la medición de todos los sensores
  * en conjunto. Los resultados de las mediciones son mostrados
  * por comunicación serial
- */
+ * 
+ * NOTAS:
+ * Para subir codigo a esp32, desconectar de fuente de alimentacion externa
+ * 
+ * TODOs:
+ * - Calibracion:
+ *   - Medir tension en terminales (pcb) del sensonr de uv 
+ *   - Medir tension de salida del particulado
+ * - Definir tiempo de sueño profundo de esp32
+ * - Cambiar link de envio de datos 
+*/
 
+// Funciones sensores
 #include "sensor_material_particulado.h"
 #include "sensor_temp_hum.h"
 #include "sensor_UV.h"
 
-// Sensor CO2
+#include <Arduino.h>
 #include <Adafruit_SGP30.h>
-int counter = 0;
+#include <WiFi.h>
+#include <HTTPClient.h>
+
+
+#define uS_TO_S_FACTOR 1000000  // Conversion factor for micro seconds to seconds
+#define TIME_TO_SLEEP 10  // Tiempo en segundos
+
+// Credenciales WiFi
+const char* ssid = "";
+const char* password = "";
+
+const char* apiUrl = "https://api.thingspeak.com/update?api_key=L62DGBD7ZYY9K02O";
+
 Adafruit_SGP30 sgp;
+int counter = 0;
+int counter1 = 0;
 
 void setup(){
   Serial.begin(115200);
@@ -24,29 +49,93 @@ void setup(){
     Serial.println("Sensor de CO2 no encontrado.");
   }
 
+  // Conexion WiFi
+  WiFi.begin(ssid, password);
+  Serial.print("Conectando a la red: ");
+  Serial.println(ssid);
+
+  while(WiFi.status() != WL_CONNECTED){
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("");
+  Serial.println("Conexion WiFi establecida!");
+  Serial.print("Direccion IP: ");
+  Serial.println(WiFi.localIP());
+  
+  delay(2000);
+
 }
 
-void loop(){
-  delay(1000);
-  
-  Serial.println("MEDICIÓN MATERIAL PARTICULADO");
-  float material_particulado = leerSensorMaterialParticulado(); // tiempo de ejecucion de 1 seg (N*10 ms)
-  Serial.println("MEDICIÓN UV");
-  float ultra_violeta = leerSensorUV();
-  float humedad = leerSensorHumedad();
-  float temperatura = leerSensorTemperatura();
-  Serial.println("MEDICIÓN CO2");
-  float co2 = leerCO2();
+float material_particulado, ultra_violeta, humedad, temperatura, co2;
+float total_MP, total_UV, total_H, total_T, total_CO2;
+int nMuestras = 3;
 
+void loop(){
+  total_MP = 0; total_UV = 0; total_H = 0; total_T = 0; total_CO2 = 0; // reset counters
+  
+  for(int i = 0; i < nMuestras; i++){  // Tomar nMuestras y luego las envia
+    medir();
+    // Volver a Medir cuando hay error
+    while(isnan(temperatura)or isnan(humedad) or isnan(ultra_violeta)or co2 == -1 or material_particulado == 0){
+      medir();
+    }
+    // Sumar para promediar
+    total_MP += material_particulado;
+    total_UV += ultra_violeta;
+    total_H += humedad;
+    total_T += temperatura;
+    total_CO2 += co2;
+  }
+  // Promediar y luego enviar a thingspeak
+  material_particulado = total_MP / nMuestras;
+  ultra_violeta = total_UV / nMuestras;
+  humedad = total_H / nMuestras;
+  temperatura = total_T / nMuestras;
+  co2 = total_CO2 / nMuestras;
+  
   Serial.println("");
   Serial.println("-----------------------------------------------");
   Serial.println("------------------- RESUMEN -------------------");
   Serial.println("Material Particulado: " + String(material_particulado) +
-                 " Ultra Violeta: " + String(ultra_violeta) +
-                 " Humedad: " + String(humedad) +
-                 " Temperatura: " + String(temperatura) +
-                 " C02: " + String(co2));
+                 " Ultra Violeta: " + String(ultra_violeta) + " mW/m2" +
+                 " Humedad: " + String(humedad) + " %" +
+                 " Temperatura: " + String(temperatura) + " ºC" +
+                 " C02: " + String(co2) + " ppm");
   Serial.println("");
+  delay(1000);
+
+  if(WiFi.status() == WL_CONNECTED) {
+    WiFiClient client;
+    HTTPClient http;
+    //Linea de envio de datos
+    String data = "&field1=" + String(MaterialParticulado)+ "&field2="+String(co2)+ "&field3="+String(Temperatura)+ "&field4="+String(Humedad)+ "&field5="+String(Ultra_Violeta);
+    String query = apiUrl + data;
+    http.begin(query.c_str());
+    int httpResponseCode = http.GET();
+             
+    Serial.print("Codigo de respuesta: ");
+    Serial.println(httpResponseCode);
+    http.end();
+  }
+  else{
+    Serial.println("Conexion WiFi no disponible");
+  }
+  
+  esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);  // Inicia conteo para despertar
+  esp_deep_sleep_start();  
+
+
+  void medir(){
+    Serial.println("MEDICIÓN MATERIAL PARTICULADO");
+    material_particulado = leerSensorMaterialParticulado(); // tiempo de ejecucion de 1 seg (N*10 ms)
+    Serial.println("MEDICIÓN UV");
+    ultra_violeta = leerSensorUV();
+    humedad = leerSensorHumedad();
+    temperatura = leerSensorTemperatura();
+    co2 = leerCO2();
+    delay(2000);
+  }
 }
 
 
@@ -55,21 +144,12 @@ float leerCO2(){
     Serial.println("Medición CO2 fallida.");
     return -1;
   }
-  // Medir los compuestos orgánicos volátiles totales (Compuestos perjudiciales para la salud) en partes por billón:
-  Serial.print("TVOC: "); Serial.print(sgp.TVOC); Serial.println(" ppb/t.");
-  // Medir el dióxido de carbono equivalente calculado (de 0 a 60000 partes por millón):
-  Serial.print("eCO2: "); Serial.print(sgp.eCO2); Serial.println(" ppm");
-
+  
   if (!sgp.IAQmeasureRaw()){ // Alerta en caso de error
     Serial.println("Medición CO2 sin procesar fallida.");
     return -1;
   }
-  // El sensor usa medidiciones de H2 para estimar el valor del eCO2:
-  // Falta revisar bien estas funciones:
-  // Obtener medidas brutas de H2 y etanol:
-  Serial.print("Raw H2: "); Serial.print(sgp.rawH2); Serial.print(" /t");
-  Serial.print("Raw etanol: "); Serial.println(sgp.rawEthanol);
-
+  
   delay(1000);
   counter++;
 
@@ -77,14 +157,10 @@ float leerCO2(){
   if (counter == 30){ // Contador para (LLENAR)
     counter = 0;
     uint16_t TVOC_base, eCO2_base;
-    if (!sgp.getIAQBaseline(&eCO2_base, &TVOC_base)){ // Indicar errores en caso de falla en la medición
+    if (!sgp.getIAQBaseline(&eCO2_base, &TVOC_base)){ // Indicar errores en caso de falla en la medicion
       Serial.println("Error al obtener las lecturas de referencia.");
       return -1;
     }
-    Serial.print("***Lecturas de referencia: eCO2: 0x");
-    Serial.print(eCO2_base, HEX);
-    Serial.print(" & TVOC: 0x");
-    Serial.println(TVOC_base, HEX);
   }
   return sgp.eCO2;
 }
