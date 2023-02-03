@@ -1,2 +1,2 @@
-void setupSensorUV();
-float leerSensorUV();
+void setupUV();
+float LeerSensorUV();
