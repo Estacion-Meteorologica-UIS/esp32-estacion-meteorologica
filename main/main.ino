@@ -17,6 +17,7 @@
 #include "sensor_material_particulado.h"
 #include "sensor_temp_hum.h"
 #include "sensor_UV.h"
+#include "secrets.h"
 
 #include <Arduino.h>
 #include <Adafruit_SGP30.h>
@@ -27,12 +28,12 @@
 #define TIME_TO_SLEEP 10  // Tiempo en segundos
 
 WiFiClient client;
-// Credenciales WiFi
-const char* ssid = "";
-const char* password = "";
+// Credenciales
+char ssid[] = SECRET_SSID;
+char pass[] = SECRET_PASS;
 
-unsigned long channelID = 2007719;
-const char* WriteAPIKey = "62SBQSM99SCRXMQT";
+unsigned long channelID = SECRET_CH_ID;
+const char * WriteAPIKey = SECRET_WRITE_APIKEY;
 
 
 Adafruit_SGP30 sgp;
@@ -52,7 +53,7 @@ void setup(){
   }
 
   // Conexion WiFi
-  WiFi.begin(ssid, password);
+  WiFi.begin(ssid, pass);
   Serial.print("Conectando a la red: ");
   Serial.println(ssid);
 
