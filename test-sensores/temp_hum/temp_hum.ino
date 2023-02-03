@@ -6,8 +6,6 @@
 // Board Connection: https://i0.wp.com/randomnerdtutorials.com/wp-content/uploads/2019/04/dht_esp32_bb.png?w=714&quality=100&strip=all&ssl=1
 //   
 //
-// Serial monitor setting:
-//   9600 baud
 /////////////////////////////////////////////////////////////////////////////
 // Codigo base de: https://randomnerdtutorials.com/esp32-dht11-dht22-temperature-humidity-sensor-arduino-ide/
 // Codigo dado por: Daniel Cerro
@@ -46,7 +44,6 @@ void imprimirTyH(float t, float h) {
 
 void loop() {
 
-  
 	delay(2000); //Es un sensor lento, por lo que hay que darle tiempo.
 	float h = dht.readHumidity();
 	float t = dht.readTemperature();
