@@ -21,17 +21,19 @@
 #include <Arduino.h>
 #include <Adafruit_SGP30.h>
 #include <WiFi.h>
-#include <HTTPClient.h>
-
+#include <ThingSpeak.h>  // Se recomienda que sea la ultima libreria en importar
 
 #define uS_TO_S_FACTOR 1000000  // Conversion factor for micro seconds to seconds
 #define TIME_TO_SLEEP 10  // Tiempo en segundos
 
+WiFiClient client;
 // Credenciales WiFi
 const char* ssid = "";
 const char* password = "";
 
-const char* apiUrl = "https://api.thingspeak.com/update?api_key=L62DGBD7ZYY9K02O";
+unsigned long channelID = 2007719;
+const char* WriteAPIKey = "62SBQSM99SCRXMQT";
+
 
 Adafruit_SGP30 sgp;
 int counter = 0;
@@ -62,7 +64,7 @@ void setup(){
   Serial.println("Conexion WiFi establecida!");
   Serial.print("Direccion IP: ");
   Serial.println(WiFi.localIP());
-  
+  ThingSpeak.begin(client);
   delay(2000);
 
 }
@@ -115,21 +117,20 @@ void loop(){
   delay(1000);
 
   if(WiFi.status() == WL_CONNECTED) {
-    WiFiClient client;
-    HTTPClient http;
-    //Linea de envio de datos
-    String data = "&field1=" + String(temperatura) +
-                  "&field2=" + String(humedad) +
-                  "&field3=" + String(material_particulado) +
-                  "&field4=" + String(ultra_violeta) +
-                  "&field5=" + String(co2);
-    String query = apiUrl + data;
-    http.begin(query.c_str());
-    int httpResponseCode = http.GET();
-             
-    Serial.print("Codigo de respuesta: ");
-    Serial.println(httpResponseCode);
-    http.end();
+    ThingSpeak.setField(1, temperatura);
+    ThingSpeak.setField(2, humedad);
+    ThingSpeak.setField(3, material_particulado);
+    ThingSpeak.setField(4, ultra_violeta);
+    ThingSpeak.setField(5, co2);
+
+    // Enviar alertas o errores a thingspeak. ejemplo:
+    ThingSpeak.setStatus("La conexion wifi es mala");
+    int x =   ThingSpeak.writeFields(channelID,WriteAPIKey);
+    if(x == 200){
+      Serial.println("Canal actualizado correctamente");
+    }else{
+      Serial.println("Codigo de error HTTP " + String(x));
+    }
   }
   else{
     Serial.println("Conexion WiFi no disponible");
