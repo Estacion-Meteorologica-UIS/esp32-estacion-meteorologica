@@ -3,9 +3,9 @@
  * por comunicación serial
  */
 
-#include "material_particulado.h"
-#include "sensorhum.h"
-#include "UV.h"
+#include "sensor_material_particulado.h"
+#include "sensor_temp_hum.h"
+#include "sensor_UV.h"
 
 // Sensor CO2
 #include <Adafruit_SGP30.h>
