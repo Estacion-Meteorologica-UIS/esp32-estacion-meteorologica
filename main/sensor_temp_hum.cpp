@@ -16,7 +16,7 @@
 #include <DHT.h>
 #include <DHT_U.h>
 
-// Definición de Pines
+// Definicion de Pines
 #define DHTPIN 14
 #define DHTTYPE DHT11
 

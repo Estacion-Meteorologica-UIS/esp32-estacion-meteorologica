@@ -4,7 +4,7 @@
  * Board Connection:
  * 
  * Codigo base de:
- * Código adaptado por:
+ * Codigo adaptado por:
  *  - David Fontalvo
  * Codigo Revisado por:
  *  - Juan Sebastian Guerrero
@@ -13,7 +13,7 @@
 #include <Arduino.h>
 #include <Wire.h>
 
-// Definición de Pines
+// Definicion de Pines
 int UVOUT = 15;  // Se conecta el D15 a la salida del sensor 
 int REF_3V3 = 2; // D4 se conecta con los 3.3V 
 
@@ -46,12 +46,12 @@ float leerSensorUV(){
   int refLevel = averageAnalogRead(REF_3V3);
   float outputVoltage = (3.3 / refLevel) * uvLevel;
 
-  //Convierte el voltaje leído por el senor a un nivel de intensidad UV en mW/cm^2.
+  //Convierte el voltaje leido por el senor a un nivel de intensidad UV en mW/cm^2.
   float uvIntensity = mapfloat(outputVoltage, 0.89 , 3, 0.0, 15.0); 
   //Sin luz UV (0.0mW/cm^2) la salida del sensor es aproximadamente 1V, pero me lee 0.89V
-  //Con máximo valor que puede leer es 15mW/cm^2 da 2.8V a la salida del sensor.
+  //Con maximo valor que puede leer es 15mW/cm^2 da 2.8V a la salida del sensor.
 
-  //También se imprime el voltaje de salida del sensor
-  //pero es poder verlo y tenerlo de referencia en la conversión en mapfloat():
+  //Tambien se imprime el voltaje de salida del sensor
+  //pero es poder verlo y tenerlo de referencia en la conversion en mapfloat():
   return uvIntensity;
 }

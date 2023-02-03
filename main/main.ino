@@ -1,6 +1,6 @@
-/* Codigo para ESP32 para hacer la medición de todos los sensores
+/* Codigo para ESP32 para hacer la medicion de todos los sensores
  * en conjunto. Los resultados de las mediciones son mostrados
- * por comunicación serial
+ * por comunicacion serial
  * 
  * NOTAS:
  * Para subir codigo a esp32, desconectar de fuente de alimentacion externa
@@ -142,18 +142,18 @@ void loop(){
 
 float leerCO2(){
   if (!sgp.IAQmeasure()){  // Alerta en caso de error
-    Serial.println("Medición CO2 fallida.");
+    Serial.println("Medicion CO2 fallida.");
     return -1;
   }
   if (!sgp.IAQmeasureRaw()){ // Alerta en caso de error
-    Serial.println("Medición CO2 sin procesar fallida.");
+    Serial.println("Medicion CO2 sin procesar fallida.");
     return -1;
   }
   
   delay(1000);
   counter++;
 
-  // Revisar funcionalidad en la documentación
+  // Revisar funcionalidad en la documentacion
   if (counter == 30){ // Contador para (LLENAR)
     counter = 0;
     uint16_t TVOC_base, eCO2_base;

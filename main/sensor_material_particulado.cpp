@@ -19,18 +19,18 @@
 
 #include <Arduino.h>
 
-// Definición de Pines
+// Definicion de Pines
 const int sharpLEDPin = 5;   // Arduino digital pin 18 connectado al LED del sensor.
 const int sharpVoPin = 4;   // Arduino analog pin 15 connectado al Vo del sensor.
 
-// Para promediar las últimas N lecturas de voltaje bruto.
+// Para promediar las ultimas N lecturas de voltaje bruto.
 #define N 100
 static unsigned long VoRawTotal = 0;
 static int VoRawCount = 0;
 
-// Configure el voltaje de salida típico en voltios cuando no haya polvo.
+// Configure el voltaje de salida tipico en voltios cuando no haya polvo.
 static float Voc = 0.6;
-// Use la sensibilidad típica en unidades de V por 100ug/m3.
+// Use la sensibilidad tipica en unidades de V por 100ug/m3.
 const float K = 0.5;
 
 
@@ -48,7 +48,7 @@ float leerSensorMaterialParticulado(){
   while (VoRawCount < N){ // Tomar N cantidad de muestras
     
     digitalWrite(sharpLEDPin, LOW);  // Encienda el LED del sensor de polvo (Activacion en bajo)
-    // Espere 0,28 ms antes de tomar una lectura del voltaje de salida según las especificaciones
+    // Espere 0,28 ms antes de tomar una lectura del voltaje de salida segun las especificaciones
     delayMicroseconds(280);
     
     int VoRaw = analogRead(sharpVoPin);  // Registre el voltaje de salida.
@@ -67,7 +67,7 @@ float leerSensorMaterialParticulado(){
 
   // Convertir a Densidad de Polvo en unidades de ug/m3.
   float dV = Vo - Voc;
-  if (dV < 0){  // Se corrige el límite de no polvo
+  if (dV < 0){  // Se corrige el limite de no polvo
     dV = 0;
     Voc = Vo;
   }
