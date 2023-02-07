@@ -39,9 +39,30 @@ const char * WriteAPIKey = SECRET_WRITE_APIKEY;
 Adafruit_SGP30 sgp;
 int counter = 0;
 int counter1 = 0;
-
+//
+String get_wifi_status(int status){
+    switch(status){
+        case WL_IDLE_STATUS:
+        return "WL_IDLE_STATUS";
+        case WL_SCAN_COMPLETED:
+        return "WL_SCAN_COMPLETED";
+        case WL_NO_SSID_AVAIL:
+        return "WL_NO_SSID_AVAIL";
+        case WL_CONNECT_FAILED:
+        return "WL_CONNECT_FAILED";
+        case WL_CONNECTION_LOST:
+        return "WL_CONNECTION_LOST";
+        case WL_CONNECTED:
+        return "WL_CONNECTED";
+        case WL_DISCONNECTED:
+        return "WL_DISCONNECTED";
+    }
+}
+//
 void setup(){
   Serial.begin(115200);
+
+  int status = WL_IDLE_STATUS;
 
   // -------------- Setup Sensores --------------
   setupSensorMaterialParticulado();
@@ -53,13 +74,16 @@ void setup(){
   }
 
   // Conexion WiFi
+  WiFi.disconnect(true);
   WiFi.begin(ssid, pass);
   Serial.print("Conectando a la red: ");
   Serial.println(ssid);
 
   while(WiFi.status() != WL_CONNECTED){
     delay(500);
-    Serial.print(".");
+    status = WiFi.status();
+    Serial.println(get_wifi_status(status));
+    //Serial.print(".");
   }
   Serial.println("");
   Serial.println("Conexion WiFi establecida!");
@@ -89,9 +113,9 @@ void loop(){
   for(int i = 0; i < nMuestras; i++){  // Tomar nMuestras y luego las envia
     medir();
     // Volver a Medir cuando hay error
-    while(isnan(temperatura)or isnan(humedad) or isnan(ultra_violeta)or co2 == -1 or material_particulado == 0){
-      medir();
-    }
+    //while(isnan(temperatura)or isnan(humedad) or isnan(ultra_violeta)or co2 == -1 or material_particulado == 0){
+    //  medir();
+    //}
     // Sumar para promediar
     total_MP += material_particulado;
     total_UV += ultra_violeta;
@@ -166,3 +190,4 @@ float leerCO2(){
   }
   return sgp.eCO2;
 }
+
