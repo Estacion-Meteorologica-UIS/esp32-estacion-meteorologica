@@ -11,7 +11,8 @@
  *   - Medir tension de salida del particulado
  * - Definir tiempo de sueño profundo de esp32
  * - Cambiar link de envio de datos 
-*/
+
+ */
 
 // Funciones sensores
 #include "sensor_material_particulado.h"
@@ -83,6 +84,7 @@ int nMuestras = 3;
 
 void medir(){
   //No cambiar de orden en el que se llaman
+  delay(2000);
   material_particulado = leerSensorMaterialParticulado(); // tiempo de ejecucion de 1 seg (N*10 ms)  
   ultra_violeta = leerSensorUV();  
   delay(2000);
