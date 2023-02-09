@@ -61,8 +61,9 @@ String get_wifi_status(int status){
 //
 void setup(){
   Serial.begin(115200);
+  Serial.println("------------------- INICIO -------------------");
 
-  int status = WL_IDLE_STATUS;
+  
 
   // -------------- Setup Sensores --------------
   setupSensorMaterialParticulado();
@@ -72,26 +73,8 @@ void setup(){
   if (!sgp.begin()) { // Alerta por si la ESP no detecta el sensor
     Serial.println("Sensor de CO2 no encontrado.");
   }
-
-  // Conexion WiFi
-  WiFi.disconnect(true);
-  WiFi.begin(ssid, pass);
-  Serial.print("Conectando a la red: ");
-  Serial.println(ssid);
-
-  while(WiFi.status() != WL_CONNECTED){
-    delay(500);
-    status = WiFi.status();
-    Serial.println(get_wifi_status(status));
-    //Serial.print(".");
-  }
-  Serial.println("");
-  Serial.println("Conexion WiFi establecida!");
-  Serial.print("Direccion IP: ");
-  Serial.println(WiFi.localIP());
-  ThingSpeak.begin(client);
-  delay(2000);
-
+  
+  
 }
 
 float material_particulado, ultra_violeta, humedad, temperatura, co2;
@@ -99,12 +82,16 @@ float total_MP, total_UV, total_H, total_T, total_CO2;
 int nMuestras = 3;
 
 void medir(){
-  material_particulado = leerSensorMaterialParticulado(); // tiempo de ejecucion de 1 seg (N*10 ms)
-  ultra_violeta = leerSensorUV();
-  humedad = leerSensorHumedad();
-  temperatura = leerSensorTemperatura();
-  co2 = leerCO2();
+  //No cambiar de orden en el que se llaman
+  material_particulado = leerSensorMaterialParticulado(); // tiempo de ejecucion de 1 seg (N*10 ms)  
+  ultra_violeta = leerSensorUV();  
   delay(2000);
+  humedad = leerSensorHumedad();
+  temperatura = leerSensorTemperatura();  
+  
+  
+  co2 = leerCO2();
+  
 }
 
 void loop(){
@@ -130,6 +117,27 @@ void loop(){
   temperatura = total_T / nMuestras;
   co2 = total_CO2 / nMuestras;
   
+  // Conexion WiFi
+  int status = WL_IDLE_STATUS;
+  WiFi.disconnect(true);
+  WiFi.begin(ssid, pass);
+  Serial.print("Conectando a la red: ");
+  Serial.println(ssid);
+
+  while(WiFi.status() != WL_CONNECTED){
+    delay(500);
+    status = WiFi.status();
+    Serial.println(get_wifi_status(status));
+    //Serial.print(".");
+  }
+  Serial.println("");
+  Serial.println("Conexion WiFi establecida!");
+  Serial.print("Direccion IP: ");
+  Serial.println(WiFi.localIP());
+  
+  delay(2000);
+
+  
   Serial.println("");
   Serial.println("-----------------------------------------------");
   Serial.println("------------------- RESUMEN -------------------");
@@ -141,6 +149,8 @@ void loop(){
   Serial.println("");
   delay(1000);
 
+  // Thinspeak  
+  ThingSpeak.begin(client);  // Initialize ThingSpeak
   if(WiFi.status() == WL_CONNECTED) {
     ThingSpeak.setField(1, temperatura);
     ThingSpeak.setField(2, humedad);
@@ -161,8 +171,8 @@ void loop(){
     Serial.println("Conexion WiFi no disponible");
   }
   
-  esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);  // Inicia conteo para despertar
-  esp_deep_sleep_start();  
+   esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);  // Inicia conteo para despertar
+   esp_deep_sleep_start();  
 
 }
 
